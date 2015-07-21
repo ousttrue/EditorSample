@@ -195,7 +195,12 @@ namespace EditorSample.ViewModles
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.FileName = "Document"; // Default file name
             dlg.DefaultExt = ".txt"; // Default file extension
-            dlg.Filter = "Text documents (.txt;.xml)|*.txt;*.xml"; // Filter files by extension
+            dlg.Filter = String.Join("|"
+                , new[]
+                {
+                    "Text documents (.txt)|*.txt",
+                    "Add Files(.*)|*.*",
+                });
 
             // Show open file dialog box
             Nullable<bool> result = dlg.ShowDialog();
