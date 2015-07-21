@@ -16,13 +16,28 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Document" >
                 <MenuItem Header="New" Command="{Binding NewDocumentCommand}"/>
+                <MenuItem Header="Open" Command="{Binding OpenDocumentCommand}"/>
+                <MenuItem Header="Save" Command="{Binding SaveDocumentCommand}" />
+                <MenuItem Header="SaveAs" Command="{Binding SaveDocumentAsCommand}" />
+                <MenuItem Header="Close" Command="{Binding CloseDocumentCommand}" />
             </MenuItem>
+            <ComboBox ItemsSource="{Binding HighlightDefs}"
+                      SelectedItem="{Binding HighlightDef.Value}"
+                      />
+            <ComboBox ItemsSource="{Binding FontFamilies}"
+                      SelectedItem="{Binding FontFamily.Value}"
+                      />
+            <ComboBox ItemsSource="{Binding FontSizeList}"
+                      SelectedItem="{Binding FontSize.Value}"
+                      />
         </Menu>
-        <avalonEdit:TextEditor xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-                               Document="{Binding Document.Value}"
+        <avalonEdit:TextEditor xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"                               
                                IsEnabled="{Binding HasDocument.Value}"
-            FontFamily="Consolas"
-            SyntaxHighlighting="C#"
-            FontSize="10pt"/>
+                               Document="{Binding Document.Value}"
+                               IsReadOnly="{Binding IsReadOnly.Value}"                               
+                               SyntaxHighlighting="{Binding HighlightDef.Value}"
+                               FontFamily="{Binding FontFamily.Value}"
+                               FontSize="{Binding FontSize.Value}"
+                               />
     </DockPanel>
 </Window>
