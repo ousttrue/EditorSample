@@ -1,5 +1,8 @@
-﻿using ICSharpCode.AvalonEdit.Document;
+﻿using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Indentation;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
@@ -10,7 +13,7 @@ using System.Text;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace EditorSample.ViewModles
+namespace EditorSample.ViewModels
 {
     class MainWindowViewModel
     {
@@ -22,7 +25,7 @@ namespace EditorSample.ViewModles
             {
                 if(m_document== null)
                 {
-                    m_document = new ReactiveProperty<TextDocument>();
+                    m_document = new ReactiveProperty<TextDocument>(new TextDocument());
                 }
                 return m_document;
             }
@@ -46,6 +49,41 @@ namespace EditorSample.ViewModles
                 }
                 return m_highlightdef;
           }
+        }
+
+        TextEditorOptions m_options = new TextEditorOptions
+        {
+            
+        };
+
+        ReactiveProperty<IIndentationStrategy> m_indentationStrategy;
+        public ReactiveProperty<IIndentationStrategy> IndentationStrategy
+        {
+            get
+            {
+                if(m_indentationStrategy== null)
+                {
+                    m_indentationStrategy = HighlightDef
+                        .Select(syntaxHighlighting =>
+                        {
+                            switch (syntaxHighlighting.Name)
+                            {
+                                case "XML":
+                                    return new ICSharpCode.AvalonEdit.Indentation.DefaultIndentationStrategy();
+
+                                case "C#":
+                                case "C++":
+                                case "PHP":
+                                case "Java":
+                                    return new ICSharpCode.AvalonEdit.Indentation.CSharp.CSharpIndentationStrategy(m_options);
+                            }
+                            return new ICSharpCode.AvalonEdit.Indentation.DefaultIndentationStrategy();
+                        })
+                        .ToReactiveProperty<IIndentationStrategy>()
+                        ;
+                }
+                return m_indentationStrategy;
+            }
         }
 
         ReactiveProperty<Boolean> m_isDirty;
@@ -127,18 +165,17 @@ namespace EditorSample.ViewModles
 
                 if (!File.Exists(value))
                 {
-                    Document.Value = null;
+                    Document.Value = new TextDocument();
+                    return;
                 }
-                else
-                {
-                    // Check file attributes and set to read-only if file attributes indicate that
-                    if ((System.IO.File.GetAttributes(value) & FileAttributes.ReadOnly) != 0)
-                    {
-                        IsReadOnly.Value = true;
-                    }
 
-                    Document.Value = new TextDocument(File.ReadAllText(value, Encoding.UTF8).Select(x => x));
+                // Check file attributes and set to read-only if file attributes indicate that
+                if ((System.IO.File.GetAttributes(value) & FileAttributes.ReadOnly) != 0)
+                {
+                    IsReadOnly.Value = true;
                 }
+
+                Document.Value = new TextDocument(File.ReadAllText(value, Encoding.UTF8).Select(x => x));
             }
         }
 
@@ -193,13 +230,13 @@ namespace EditorSample.ViewModles
         {
             // Configure open file dialog box
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.FileName = "Document"; // Default file name
-            dlg.DefaultExt = ".txt"; // Default file extension
+            //dlg.FileName = "Document"; // Default file name
+            //dlg.DefaultExt = ".*"; // Default file extension
             dlg.Filter = String.Join("|"
                 , new[]
                 {
-                    "Text documents (.txt)|*.txt",
                     "Add Files(.*)|*.*",
+                    "Text documents (.txt)|*.txt",
                 });
 
             // Show open file dialog box
@@ -253,27 +290,6 @@ namespace EditorSample.ViewModles
 
         private void OnSaveAs(object parameter)
         {
-        }
-        #endregion
-
-        #region CloseCommand
-        ReactiveCommand _closeDocumentCommand;
-        public ICommand CloseDocumentCommand
-        {
-            get
-            {
-                if (_closeDocumentCommand == null)
-                {
-                    _closeDocumentCommand = HasDocument.ToReactiveCommand();
-                    _closeDocumentCommand.Subscribe(x => OnClose());
-                }
-                return _closeDocumentCommand;
-            }
-        }
-
-        private void OnClose()
-        {
-            Document.Value = null;
         }
         #endregion
 

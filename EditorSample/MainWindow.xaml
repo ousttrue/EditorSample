@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:EditorSample.ViewModles"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+        xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"          
+        xmlns:local="clr-namespace:EditorSample.ViewModels"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Window.Resources>
@@ -19,7 +21,6 @@
                 <MenuItem Header="Open" Command="{Binding OpenDocumentCommand}"/>
                 <MenuItem Header="Save" Command="{Binding SaveDocumentCommand}" />
                 <MenuItem Header="SaveAs" Command="{Binding SaveDocumentAsCommand}" />
-                <MenuItem Header="Close" Command="{Binding CloseDocumentCommand}" />
             </MenuItem>
             <ComboBox ItemsSource="{Binding HighlightDefs}"
                       SelectedItem="{Binding HighlightDef.Value}"
@@ -30,14 +31,32 @@
             <ComboBox ItemsSource="{Binding FontSizeList}"
                       SelectedItem="{Binding FontSize.Value}"
                       />
+            <CheckBox IsChecked="{Binding ShowLineNumbers, ElementName=editor}" 
+                      >ShowLineNumbers</CheckBox>
+            <CheckBox IsChecked="{Binding WordWrap, ElementName=editor}" 
+                      >WordWrap</CheckBox>
+            <CheckBox IsChecked="{Binding Options.ShowEndOfLine, ElementName=editor}"
+                      >ShowEndOfLine</CheckBox>
+            <CheckBox IsChecked="{Binding Options.ShowSpaces, ElementName=editor}"
+                      >ShowSpaces</CheckBox>
+            <CheckBox IsChecked="{Binding Options.ShowTabs, ElementName=editor}"
+                      >ShowTabs</CheckBox>
+            <CheckBox IsChecked="{Binding Options.ShowBoxForControlCharacters , ElementName=editor}"
+                      >ShowBoxForControlCharacters</CheckBox>
         </Menu>
-        <avalonEdit:TextEditor xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"                               
-                               IsEnabled="{Binding HasDocument.Value}"
-                               Document="{Binding Document.Value}"
-                               IsReadOnly="{Binding IsReadOnly.Value}"                               
-                               SyntaxHighlighting="{Binding HighlightDef.Value}"
-                               FontFamily="{Binding FontFamily.Value}"
-                               FontSize="{Binding FontSize.Value}"
-                               />
+        <avalonEdit:TextEditor x:Name="editor"
+            xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"                               
+            IsEnabled="{Binding HasDocument.Value}"
+            Document="{Binding Document.Value}"
+            IsReadOnly="{Binding IsReadOnly.Value}"                               
+            SyntaxHighlighting="{Binding HighlightDef.Value}"
+            FontFamily="{Binding FontFamily.Value}"
+            FontSize="{Binding FontSize.Value}"
+            >
+            <i:Interaction.Behaviors>
+                <!-- Behaviorにはプロパティも作成可能。添付プロパティとして作成するとBindingも可能。 -->
+                <local:FoldingBehavior HighlightingDefinition="{Binding HighlightDef.Value}" />
+            </i:Interaction.Behaviors>
+        </avalonEdit:TextEditor>
     </DockPanel>
 </Window>
