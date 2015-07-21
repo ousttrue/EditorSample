@@ -176,6 +176,9 @@ namespace EditorSample.ViewModels
                 }
 
                 Document.Value = new TextDocument(File.ReadAllText(value, Encoding.UTF8).Select(x => x));
+
+                var ext = System.IO.Path.GetExtension(value);
+                HighlightDef.Value = HighlightingManager.Instance.GetDefinitionByExtension(ext);
             }
         }
 
