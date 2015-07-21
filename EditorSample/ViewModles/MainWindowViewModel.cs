@@ -64,7 +64,7 @@ namespace EditorSample.ViewModles
         public IEnumerable<FontFamily> FontFamilies
         {
             get {
-                return Fonts.SystemFontFamilies;
+                return Fonts.SystemFontFamilies.OrderBy(x=>x.ToString());
             }
         }
 
