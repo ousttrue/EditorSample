@@ -55,7 +55,7 @@
             >
             <i:Interaction.Behaviors>
                 <!-- Behaviorにはプロパティも作成可能。添付プロパティとして作成するとBindingも可能。 -->
-                <local:FoldingBehavior HighlightingDefinition="{Binding HighlightDef.Value}" />
+                <local:FoldingBehavior/>
             </i:Interaction.Behaviors>
         </avalonEdit:TextEditor>
     </DockPanel>

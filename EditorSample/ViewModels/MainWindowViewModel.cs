@@ -15,7 +15,7 @@ using System.Windows.Media;
 
 namespace EditorSample.ViewModels
 {
-    class MainWindowViewModel
+    public class MainWindowViewModel
     {
         #region AvalonEdit
         ReactiveProperty<TextDocument> m_document;
